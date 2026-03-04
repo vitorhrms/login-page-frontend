@@ -1,39 +1,68 @@
 import { loginClientApi } from "../config/login-api";
-import { IS_LOCAL } from "../config/env";
-import { users } from "../utils/users";
+import { useAuth } from "./useAuthHook";
 
-interface IResponse {
+interface ILogin {
   canLogin: boolean;
   email: string;
+  id: number | string;
+}
+interface IEmailSent {
+  emailSent: boolean;
+}
+
+interface ICodeSent {
+  canAccess: boolean;
 }
 
 const checkUserPassword = async (
   user: string,
   pass: string,
-): Promise<IResponse> => {
-  if (IS_LOCAL) {
-    const foundUser = users.find(
-      (u) => (u.user === user || u.email === user) && u.pass === pass,
-    );
-
-    return { canLogin: !!foundUser, email: foundUser?.email || "" };
-  } else {
-    const response = await loginClientApi.checkUserPassword(user, pass);
-    return response;
-  }
+): Promise<ILogin> => {
+  const response = await loginClientApi.login(user, pass);
+  return response;
 };
 
-const useCheckUserPassword = () => {
-  const getInfo = async (user: string, pass: string) => {
+const sendEmail = async (email: string): Promise<IEmailSent> => {
+  const response = await loginClientApi.sendEmail(email);
+  return response;
+};
+
+const verifyCode = async (code: string): Promise<ICodeSent> => {
+  const response = await loginClientApi.verifyCode(code);
+  return response;
+};
+
+const useLoginHook = () => {
+  const { setEmail } = useAuth();
+  const postLogin = async (user: string, pass: string) => {
     try {
       const response = await checkUserPassword(user, pass);
+      setEmail(response.email);
       return response;
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error));
     }
   };
 
-  return { getInfo };
+  const postSendEmail = async (email: string) => {
+    try {
+      const response = await sendEmail(email);
+      return response;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  const postVerifyCode = async (code: string) => {
+    try {
+      const response = await verifyCode(code);
+      return response;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  return { postLogin, postSendEmail, postVerifyCode };
 };
 
-export default useCheckUserPassword;
+export default useLoginHook;

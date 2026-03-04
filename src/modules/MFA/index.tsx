@@ -1,27 +1,65 @@
 import { EnvelopeSimple } from "phosphor-react";
 import * as S from "./styles";
+import useLoginHook from "../../hooks/useLogin";
+import { useState } from "react";
+import { useAuth } from "../../hooks/useAuthHook";
 
 export const MFA = () => {
+  const { postSendEmail, postVerifyCode } = useLoginHook();
+  const { email } = useAuth();
+  const [code, setCode] = useState<string>("");
+
+  const handleResend = async () => {
+    try {
+      if (email) {
+        await postSendEmail(email);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      await postVerifyCode(code);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <S.Page>
-      <S.Card>
-        <EnvelopeSimple size={38} weight="bold" />
-        <S.Title>VERIFICAÇÃO EM DUAS ETAPAS</S.Title>
+      {email ? (
+        <S.Card>
+          <EnvelopeSimple size={38} weight="bold" />
+          <S.Title>VERIFICAÇÃO EM DUAS ETAPAS</S.Title>
 
-        <S.Label style={{ marginBottom: "30px" }}>
-          Enviamos um código de verificação para o seu e-mail.
-        </S.Label>
-        <S.Field>
-          <S.Label>Informe o código enviado para o seu email:</S.Label>
-          <S.Input type="text" />
-        </S.Field>
+          <S.Label style={{ marginBottom: "30px" }}>
+            Enviamos um código de verificação para o seu e-mail.
+          </S.Label>
+          <S.Field>
+            <S.Label>Informe o código enviado para o seu email:</S.Label>
+            <S.Input
+              type="text"
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleVerifyCode();
+                }
+              }}
+            />
+          </S.Field>
 
-        <S.Button>Verificar</S.Button>
+          <S.Button onClick={handleVerifyCode}>Verificar</S.Button>
 
-        <S.Resend>
-          Não recebeu o código?<S.Forgot href="#">Reenviar</S.Forgot>
-        </S.Resend>
-      </S.Card>
+          <S.Resend>
+            Não recebeu o código?
+            <S.Forgot onClick={handleResend}>Reenviar</S.Forgot>
+          </S.Resend>
+        </S.Card>
+      ) : (
+        ""
+      )}
     </S.Page>
   );
 };

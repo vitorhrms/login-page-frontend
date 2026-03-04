@@ -1,26 +1,36 @@
 import { useNavigate } from "react-router-dom";
 import * as S from "./styles";
-import useCheckUserPassword from "../../hooks/useLogin";
+import useLoginHook from "../../hooks/useLogin";
 import { useState } from "react";
 
 export const Login = () => {
-  const { getInfo } = useCheckUserPassword();
+  const { postLogin, postSendEmail } = useLoginHook();
   const [user, setUser] = useState<string>("");
   const [pass, setPass] = useState<string>("");
   const navigate = useNavigate();
 
   const handleClick = async () => {
-    if (user && pass) {
-      const teste = await getInfo(user, pass);
-      console.log(teste);
-      // navigate("/mfa");
+    try {
+      if (user && pass) {
+        const response = await postLogin(user, pass);
+
+        if (response.canLogin) {
+          // const sent = await postSendEmail(response.email);
+
+          // if (sent.emailSent) {
+          navigate("/mfa");
+          // }
+        }
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
   return (
     <S.Page>
       <S.Card>
-        <S.Title>LOGIN TO SYSTEM</S.Title>
+        <S.Title>Portal</S.Title>
 
         <S.Field>
           <S.Label>Username ou E-mail</S.Label>
@@ -37,6 +47,11 @@ export const Login = () => {
             type="password"
             placeholder="••••••••"
             onChange={(e) => setPass(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleClick();
+              }
+            }}
           />
         </S.Field>
 
