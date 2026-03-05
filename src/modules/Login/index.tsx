@@ -15,11 +15,11 @@ export const Login = () => {
         const response = await postLogin(user, pass);
 
         if (response.canLogin) {
-          // const sent = await postSendEmail(response.email);
+          const sent = await postSendEmail(response.email);
 
-          // if (sent.emailSent) {
-          navigate("/mfa");
-          // }
+          if (sent.emailSent) {
+            navigate("/mfa");
+          }
         }
       }
     } catch (e) {
