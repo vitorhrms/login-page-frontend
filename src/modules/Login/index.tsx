@@ -4,7 +4,7 @@ import useLoginHook from "../../hooks/useLogin";
 import { useState } from "react";
 
 export const Login = () => {
-  const { postLogin, postSendEmail } = useLoginHook();
+  const { postLogin } = useLoginHook();
   const [user, setUser] = useState<string>("");
   const [pass, setPass] = useState<string>("");
   const navigate = useNavigate();
@@ -15,11 +15,7 @@ export const Login = () => {
         const response = await postLogin(user, pass);
 
         if (response.canLogin) {
-          const sent = await postSendEmail(response.email);
-
-          if (sent.emailSent) {
-            navigate("/mfa");
-          }
+          navigate("/mfa");
         }
       }
     } catch (e) {
@@ -63,6 +59,8 @@ export const Login = () => {
         <S.Button onClick={handleClick}>Entrar</S.Button>
 
         <S.Forgot href="#">Esqueceu a senha?</S.Forgot>
+
+        <S.Forgot onClick={() => navigate("/register")}>Registrar</S.Forgot>
       </S.Card>
     </S.Page>
   );

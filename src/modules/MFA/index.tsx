@@ -3,11 +3,13 @@ import * as S from "./styles";
 import useLoginHook from "../../hooks/useLogin";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuthHook";
+import { useNavigate } from "react-router-dom";
 
 export const MFA = () => {
   const { postSendEmail, postVerifyCode } = useLoginHook();
   const { email } = useAuth();
   const [code, setCode] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleResend = async () => {
     try {
@@ -21,7 +23,10 @@ export const MFA = () => {
 
   const handleVerifyCode = async () => {
     try {
-      await postVerifyCode(code);
+      const response = await postVerifyCode(code);
+      if (response.canAccess) {
+        navigate("/mainpage");
+      }
     } catch (e) {
       console.log(e);
     }
