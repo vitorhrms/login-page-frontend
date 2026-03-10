@@ -7,12 +7,17 @@ const loginApi = axios.create({
 });
 
 export const loginClientApi = {
+  register: async (user: string, email: string, pass: string) => {
+    try {
+      const response = await loginApi.post("/register", { user, email, pass });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
   login: async (user: string, pass: string) => {
     try {
-      const params = new URLSearchParams();
-      params.append("user", user);
-      params.append("pass", pass);
-      const response = await loginApi.post("/login", { params });
+      const response = await loginApi.post("/login", { user, pass });
       return response.data;
     } catch (error) {
       throw error;
@@ -20,19 +25,15 @@ export const loginClientApi = {
   },
   sendEmail: async (email: string) => {
     try {
-      const params = new URLSearchParams();
-      params.append("email", email);
-      const response = await loginApi.post("/sendEmail", { params });
+      const response = await loginApi.post("/reSendEmail", { email });
       return response.data;
     } catch (error) {
       throw error;
     }
   },
-  verifyCode: async (code: string) => {
+  verifyCode: async (code: string, email: string) => {
     try {
-      const params = new URLSearchParams();
-      params.append("code", code);
-      const response = await loginApi.post("/verifyCode", { params });
+      const response = await loginApi.post("/verifyCode", { code, email });
       return response.data;
     } catch (error) {
       throw error;

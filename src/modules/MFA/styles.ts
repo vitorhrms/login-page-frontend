@@ -84,6 +84,7 @@ export const Forgot = styled.a`
   font-size: 14px;
   color: #2563eb;
   text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;

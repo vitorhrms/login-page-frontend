@@ -23,9 +23,11 @@ export const MFA = () => {
 
   const handleVerifyCode = async () => {
     try {
-      const response = await postVerifyCode(code);
-      if (response.canAccess) {
-        navigate("/mainpage");
+      if (email) {
+        const response = await postVerifyCode(code, email);
+        if (response.canAccess) {
+          navigate("/mainpage");
+        }
       }
     } catch (e) {
       console.log(e);

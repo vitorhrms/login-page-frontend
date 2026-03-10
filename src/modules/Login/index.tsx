@@ -12,6 +12,7 @@ export const Login = () => {
   const handleClick = async () => {
     try {
       if (user && pass) {
+        // TODO: add loading
         const response = await postLogin(user, pass);
 
         if (response.canLogin) {
@@ -60,7 +61,9 @@ export const Login = () => {
 
         <S.Forgot href="#">Esqueceu a senha?</S.Forgot>
 
-        <S.Forgot onClick={() => navigate("/register")}>Registrar</S.Forgot>
+        <S.Forgot href="#" onClick={() => navigate("/register")}>
+          Registrar
+        </S.Forgot>
       </S.Card>
     </S.Page>
   );
